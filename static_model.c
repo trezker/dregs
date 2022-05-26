@@ -41,8 +41,17 @@ Static_model* load_static_model(char* path){
 		i_static_model_load_normals(f, m, m->num_indices/3);
 	}
 
-	m->uvs = NULL;
-	m->faces = NULL;
+	m->uvs = malloc(4*2*num_indices);
+	al_fread(f, m->uvs, 4*2*m->num_indices);
+#ifdef DEBUG_PRINT
+	for(int i=0; i<m->num_indices; ++i) {
+		printf("%f %f\n", m->uvs[i*2], m->uvs[i*2+1]);
+	}
+#endif
+
+	m->faces = malloc(2*num_indices);
+	al_fread(f, m->faces, 2*m->num_indices);
+
 	al_fclose(f);
 	return m;
 }

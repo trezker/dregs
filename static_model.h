@@ -1,11 +1,11 @@
 typedef struct {
-	int num_vertices;
-	int num_indices;
-	int smooth;
+	int16_t num_vertices;
+	int16_t num_indices;
+	int16_t smooth;
 	float* vertices;
 	float* normals;
 	float* uvs;
-	int* faces;
+	int16_t* faces;
 } Static_model;
 
 Static_model* load_static_model(char* path);
