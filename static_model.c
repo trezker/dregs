@@ -1,6 +1,6 @@
-#include "static_model.h"
 #include <allegro5/allegro.h>
 #include <stdio.h>
+#include "static_model.h"
 
 #define DEBUG_PRINT
 
@@ -41,7 +41,7 @@ Static_model* load_static_model(char* path){
 		i_static_model_load_normals(f, m, m->num_indices/3);
 	}
 
-	m->uvs = malloc(4*2*num_indices);
+	m->uvs = malloc(4*2*m->num_indices);
 	al_fread(f, m->uvs, 4*2*m->num_indices);
 #ifdef DEBUG_PRINT
 	for(int i=0; i<m->num_indices; ++i) {
@@ -49,8 +49,14 @@ Static_model* load_static_model(char* path){
 	}
 #endif
 
-	m->faces = malloc(2*num_indices);
+	m->faces = malloc(2*m->num_indices);
 	al_fread(f, m->faces, 2*m->num_indices);
+#ifdef DEBUG_PRINT
+	for(int i=0; i<m->num_indices; ++i) {
+		printf("%i ", m->faces[i]);
+	}
+	printf("\n");
+#endif
 
 	al_fclose(f);
 	return m;

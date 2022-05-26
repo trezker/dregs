@@ -73,8 +73,6 @@ int main() {
 	ALLEGRO_EVENT_QUEUE *queue;
 	ALLEGRO_EVENT event;
 
-	entities_initialize(2);
-
 	if (!al_init()) {
 		abort_example("Could not init Allegro.\n");
 	}
