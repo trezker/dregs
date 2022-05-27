@@ -119,7 +119,6 @@ int main() {
 	al_use_shader(shader);
 
 	Static_model* m = load_static_model("data/cube.tmf");
-	destroy_static_model(m);
 
 	int done = 0;
 	while(!done) {
@@ -138,9 +137,11 @@ int main() {
 
 		al_clear_to_color(black);
 		Render();
+		render_static_model(m);
 		al_flip_display();
 	}
 
+	destroy_static_model(m);
 	al_destroy_event_queue(queue);
 
 	return 0;

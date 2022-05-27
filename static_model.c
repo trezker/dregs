@@ -69,3 +69,17 @@ void destroy_static_model(Static_model* model) {
 	free(model->faces);
 	free(model);
 }
+
+void render_static_model(Static_model* m) {
+	glEnableClientState (GL_VERTEX_ARRAY);
+	glEnableClientState (GL_NORMAL_ARRAY);
+	glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	
+	glVertexPointer (3, GL_FLOAT, 0, m->vertices);
+	glTexCoordPointer(2, GL_FLOAT, 0, m->uvs);
+	glNormalPointer(GL_FLOAT, 0, m->normals);
+
+	glDrawElements (GL_TRIANGLES, m->num_indices,
+					GL_UNSIGNED_INT, m->faces);
+}
