@@ -10,3 +10,4 @@ typedef struct {
 
 Static_model* load_static_model(char* path);
 void destroy_static_model(Static_model* model);
+void render_static_model(Static_model* m);

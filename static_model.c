@@ -1,5 +1,6 @@
 #include <allegro5/allegro.h>
 #include <stdio.h>
+#include <GL/glu.h>
 #include "static_model.h"
 
 #define DEBUG_PRINT
@@ -81,5 +82,5 @@ void render_static_model(Static_model* m) {
 	glNormalPointer(GL_FLOAT, 0, m->normals);
 
 	glDrawElements (GL_TRIANGLES, m->num_indices,
-					GL_UNSIGNED_INT, m->faces);
+					GL_UNSIGNED_SHORT, m->faces);
 }

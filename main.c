@@ -39,15 +39,15 @@ void Quad() {
 	float color[4] = {1, 1, 1, 1};
 	glColor4fv(color);
 	glNormal3f( 0,  0, 1);
-	glTexCoord2f(1, 1); glVertex3f( 1,  1, -3);
-	glTexCoord2f(1, 0); glVertex3f( 1, -1, -3);
-	glTexCoord2f(0, 0); glVertex3f(-1, -1, -3);
-	glTexCoord2f(0, 1); glVertex3f(-1,  1, -3);
+	glTexCoord2f(1, 1); glVertex3f( 1,  1, -4);
+	glTexCoord2f(1, 0); glVertex3f( 1, -1, -4);
+	glTexCoord2f(0, 0); glVertex3f(-1, -1, -4);
+	glTexCoord2f(0, 1); glVertex3f(-1,  1, -4);
 	glEnd();
 	glEnable(GL_LIGHTING);
 }
 
-void Render()
+void Render(Static_model* m)
 {
 	float fov = 45.f;
 	float near = 1.f;
@@ -60,7 +60,14 @@ void Render()
  	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_LIGHTING);
 
-	Quad();
+	//Quad();
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	glTranslatef(0, 0, -10);
+	float color[4] = {1, 1, 1, 1};
+	glColor4fv(color);
+	render_static_model(m);
+	glPopMatrix();
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
@@ -81,7 +88,7 @@ int main() {
 	al_install_mouse();
 	al_install_keyboard();
 
-	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
+	al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(640, 480);
 	if (!display) {
 		abort_example("Error creating display\n");
@@ -95,6 +102,7 @@ int main() {
 	ALLEGRO_COLOR black = al_map_rgb_f(0, 0, 0);
 	ALLEGRO_COLOR white = al_map_rgb_f(1, 1, 1);
 
+/*
 	ALLEGRO_SHADER* shader = al_create_shader(ALLEGRO_SHADER_AUTO);
 	if(!shader) {
 		abort_example("Could not create shader.\n");
@@ -102,7 +110,6 @@ int main() {
 	
 	const char *vsource = "shader_vertex.glsl";
 	const char *psource = "shader_pixel.glsl";
-
 	if (!al_attach_shader_source_file(shader, ALLEGRO_VERTEX_SHADER, vsource)) {
 		abort_example("al_attach_shader_source_file failed: %s\n",
 		al_get_shader_log(shader));
@@ -117,8 +124,8 @@ int main() {
 	}
 
 	al_use_shader(shader);
-
-	Static_model* m = load_static_model("data/cube.tmf");
+*/
+	Static_model* m = load_static_model("data/sphere.tmf");
 
 	int done = 0;
 	while(!done) {
@@ -136,8 +143,7 @@ int main() {
 		}
 
 		al_clear_to_color(black);
-		Render();
-		render_static_model(m);
+		Render(m);
 		al_flip_display();
 	}
 
