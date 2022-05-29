@@ -125,7 +125,7 @@ int main() {
 
 	al_use_shader(shader);
 */
-	Static_model* m = load_static_model("data/sphere.tmf");
+	Static_model* m = load_static_model("data/cube.tmf");
 
 	int done = 0;
 	while(!done) {
