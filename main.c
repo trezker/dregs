@@ -8,6 +8,7 @@
 
 #include "view.h"
 #include "static_model.h"
+#include "camera.h"
 
 #define MAX_STEPS 100
 #define MAX_DIST 100.
@@ -47,6 +48,15 @@ void Quad() {
 	glEnable(GL_LIGHTING);
 }
 
+void RenderModel(float* p, float* c, Static_model* m) {
+	glPushMatrix();
+	glTranslatef(p[0], p[1], p[2]);
+	glColor4fv(c);
+	render_static_model(m);
+	glPopMatrix();
+}
+
+Camera camera;
 void Render(Static_model* m)
 {
 	float fov = 45.f;
@@ -55,6 +65,7 @@ void Render(Static_model* m)
 	float width = 640;
 	float height = 480;
 	Init_perspective_view(fov, width/height, near, far);
+	apply_camera(&camera);
 
 	glEnable(GL_DEPTH_TEST);
  	glClear(GL_DEPTH_BUFFER_BIT);
@@ -62,12 +73,12 @@ void Render(Static_model* m)
 
 	//Quad();
 	glDisable(GL_LIGHTING);
-	glPushMatrix();
-	glTranslatef(0, 0, -10);
-	float color[4] = {1, 1, 1, 1};
-	glColor4fv(color);
-	render_static_model(m);
-	glPopMatrix();
+	RenderModel((float[3]){0, 0, -10}, (float[4]){1,1,1,1}, m);
+	RenderModel((float[3]){0, 0, 10}, (float[4]){1,1,1,1}, m);
+	RenderModel((float[3]){0, 10, 0}, (float[4]){1,1,1,1}, m);
+	RenderModel((float[3]){0, -10, 0}, (float[4]){1,1,1,1}, m);
+	RenderModel((float[3]){10, 0, 0}, (float[4]){1,1,1,1}, m);
+	RenderModel((float[3]){-10, 0, 0}, (float[4]){1,1,1,1}, m);
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
@@ -125,8 +136,10 @@ int main() {
 
 	al_use_shader(shader);
 */
+	init_camera(&camera);
 	Static_model* m = load_static_model("data/cube.tmf");
 
+	al_set_mouse_xy(display, 320, 240);
 	int done = 0;
 	while(!done) {
 		while(al_get_next_event(queue, &event)) {
@@ -139,8 +152,13 @@ int main() {
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
 					done = 1;
 					break;
+				case ALLEGRO_EVENT_MOUSE_AXES:
+					camera.rotation[0] += event.mouse.dy/10.;
+					camera.rotation[1] += event.mouse.dx/10.;
+					break;
 			}
 		}
+		al_set_mouse_xy(display, 320, 240);
 
 		al_clear_to_color(black);
 		Render(m);
