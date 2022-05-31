@@ -3,7 +3,7 @@
 #include <GL/glu.h>
 #include "static_model.h"
 
-#define DEBUG_PRINT
+//#define DEBUG_PRINT
 
 void i_static_model_load_normals(ALLEGRO_FILE* f, Static_model* m, int n) {
 	m->normals = malloc(4*3*n);

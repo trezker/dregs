@@ -53,7 +53,7 @@ void Quad() {
 void RenderModel(float* p, float* c, Static_model* m) {
 	glPushMatrix();
 	glTranslatef(p[0], p[1], p[2]);
-	apply_camera(&camera);
+	//apply_camera(&camera);
 	glColor4fv(c);
 	render_static_model(m);
 	glPopMatrix();
@@ -67,7 +67,7 @@ void Render(Static_model* m)
 	float width = 640;
 	float height = 480;
 	Init_perspective_view(fov, width/height, near, far);
-	//apply_camera(&camera);
+	apply_camera(&camera);
 
 	glEnable(GL_DEPTH_TEST);
  	glClear(GL_DEPTH_BUFFER_BIT);
@@ -154,10 +154,16 @@ int main() {
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
 					done = 1;
 					break;
-				case ALLEGRO_EVENT_MOUSE_AXES:
-					camera.rotation[0] += event.mouse.dy/10.;
-					camera.rotation[1] += event.mouse.dx/10.;
+				case ALLEGRO_EVENT_MOUSE_AXES: {
+					float r[3];
+					r[0] = -event.mouse.dy * 0.01;
+					r[1] = -event.mouse.dx * 0.01;
+					r[2] = 0;
+					rotate_local_axis(&camera, r);
+					//camera.rotation[0] += event.mouse.dy/10.;
+					//camera.rotation[1] += event.mouse.dx/10.;
 					break;
+				}
 			}
 		}
 		al_set_mouse_xy(display, 320, 240);
