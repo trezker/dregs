@@ -16,6 +16,10 @@
 
 Camera camera;
 
+float clamp(float v, float min, float max) {
+	return v<min?min:v>max?max:v;
+}
+
 void abort_example(char const *format, ...)
 {
 	char str[1024];
@@ -142,6 +146,11 @@ int main() {
 	Static_model* m = load_static_model("data/cube.tmf");
 
 	al_set_mouse_xy(display, 320, 240);
+
+	float r[3] = {0,0,0};
+	double last_time = al_current_time();
+	float roll = 0;
+
 	int done = 0;
 	while(!done) {
 		while(al_get_next_event(queue, &event)) {
@@ -150,23 +159,45 @@ int main() {
 					if(event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
 						done = 1;
 					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
+						roll = -1;
+					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
+						roll = 1;
+					}
+					break;
+				case ALLEGRO_EVENT_KEY_UP:
+					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
+						roll = 0;
+					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
+						roll = 0;
+					}
 					break;
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
 					done = 1;
 					break;
 				case ALLEGRO_EVENT_MOUSE_AXES: {
-					float r[3];
-					r[0] = -event.mouse.dy * 0.01;
-					r[1] = -event.mouse.dx * 0.01;
-					r[2] = 0;
-					rotate_local_axis(&camera, r);
-					//camera.rotation[0] += event.mouse.dy/10.;
-					//camera.rotation[1] += event.mouse.dx/10.;
+					r[0] += -event.mouse.dy * 0.01;
+					r[0] = clamp(r[0], -1, 1);
+					r[1] += -event.mouse.dx * 0.01;
+					r[1] = clamp(r[1], -1, 1);
 					break;
 				}
 			}
 		}
 		al_set_mouse_xy(display, 320, 240);
+		double current_time = al_current_time();
+		double dt = current_time - last_time;
+		last_time = current_time;
+
+		r[2] += dt*roll;
+		float dr[3] = {
+			r[0]*dt,
+			r[1]*dt,
+			r[2]*dt
+		};
+		rotate_local_axis(&camera, dr);
 
 		al_clear_to_color(black);
 		Render(m);
