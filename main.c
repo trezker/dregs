@@ -14,6 +14,8 @@
 #define MAX_DIST 100.
 #define SURF_DIST .01
 
+Camera camera;
+
 void abort_example(char const *format, ...)
 {
 	char str[1024];
@@ -51,12 +53,12 @@ void Quad() {
 void RenderModel(float* p, float* c, Static_model* m) {
 	glPushMatrix();
 	glTranslatef(p[0], p[1], p[2]);
+	apply_camera(&camera);
 	glColor4fv(c);
 	render_static_model(m);
 	glPopMatrix();
 }
 
-Camera camera;
 void Render(Static_model* m)
 {
 	float fov = 45.f;
@@ -65,7 +67,7 @@ void Render(Static_model* m)
 	float width = 640;
 	float height = 480;
 	Init_perspective_view(fov, width/height, near, far);
-	apply_camera(&camera);
+	//apply_camera(&camera);
 
 	glEnable(GL_DEPTH_TEST);
  	glClear(GL_DEPTH_BUFFER_BIT);
