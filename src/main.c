@@ -4,6 +4,8 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_opengl.h>
 #include <GL/glu.h>
 
 #include "view.h"
@@ -40,51 +42,99 @@ void abort_example(char const *format, ...)
 	exit(1);
 }
 
+ALLEGRO_BITMAP* texture;
 void Quad() {
+	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
+	glEnable(GL_TEXTURE_2D);
+
 	glDisable(GL_LIGHTING);
-	glBegin(GL_QUADS);
+	glBegin(GL_TRIANGLES);
 	float color[4] = {1, 1, 1, 1};
 	glColor4fv(color);
 	glNormal3f( 0,  0, 1);
 	glTexCoord2f(1, 1); glVertex3f( 1,  1, -4);
 	glTexCoord2f(1, 0); glVertex3f( 1, -1, -4);
 	glTexCoord2f(0, 0); glVertex3f(-1, -1, -4);
-	glTexCoord2f(0, 1); glVertex3f(-1,  1, -4);
+//	glTexCoord2f(0, 1); glVertex3f(-1,  1, -4);
 	glEnd();
 	glEnable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
 }
 
 void RenderModel(float* p, float* c, Static_model* m) {
 	glPushMatrix();
 	glTranslatef(p[0], p[1], p[2]);
-	//apply_camera(&camera);
+	apply_camera(&camera);
 	glColor4fv(c);
 	render_static_model(m);
 	glPopMatrix();
 }
 
+int face = 0;
 void Render(Static_model* m)
 {
 	float fov = 45.f;
 	float near = 1.f;
-	float far = 1000.f;
+	float far = 100.f;
 	float width = 640;
 	float height = 480;
 	Init_perspective_view(fov, width/height, near, far);
-	apply_camera(&camera);
-
 	glEnable(GL_DEPTH_TEST);
  	glClear(GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_LIGHTING);
+ 	glDepthFunc(GL_LESS);
+	//apply_camera(&camera);
 
 	//Quad();
+/*
+	glTranslatef(0, 0, -5);
+	apply_camera(&camera);
+
+	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+	glBegin(GL_TRIANGLES);
+	float color[4] = {1, 1, 1, 1};
+	glColor4fv(color);
+	glNormal3f( 0,  0, 1);
+
+	for(face = 0; face<12; ++face) {
+		glTexCoord2f(m->uvs[face*6+0], m->uvs[face*6+1]);
+		int v = m->faces[face*3+0];
+		glVertex3f( m->vertices[v*3+0],  m->vertices[v*3+1], m->vertices[v*3+2]);
+		glTexCoord2f(m->uvs[face*6+2], m->uvs[face*6+3]);
+		v = m->faces[face*3+1];
+		glVertex3f( m->vertices[v*3+0],  m->vertices[v*3+1], m->vertices[v*3+2]);
+		glTexCoord2f(m->uvs[face*6+4], m->uvs[face*6+5]);
+		v = m->faces[face*3+2];
+		glVertex3f( m->vertices[v*3+0],  m->vertices[v*3+1], m->vertices[v*3+2]);
+	}
+	glEnd();
+	glEnable(GL_LIGHTING);
+*/
+	glEnable(GL_DEPTH_TEST);
+ 	glClear(GL_DEPTH_BUFFER_BIT);
+ 	glDepthFunc(GL_LESS);
+	glEnable(GL_LIGHTING);
+
+	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
+	glEnable(GL_TEXTURE_2D);
+	glShadeModel(GL_SMOOTH);
+
+	glAlphaFunc(GL_GREATER, 0.01f);
+	glEnable(GL_ALPHA_TEST);
+
 	glDisable(GL_LIGHTING);
 	RenderModel((float[3]){0, 0, -10}, (float[4]){1,1,1,1}, m);
+	/*
 	RenderModel((float[3]){0, 0, 10}, (float[4]){1,1,1,1}, m);
 	RenderModel((float[3]){0, 10, 0}, (float[4]){1,1,1,1}, m);
 	RenderModel((float[3]){0, -10, 0}, (float[4]){1,1,1,1}, m);
 	RenderModel((float[3]){10, 0, 0}, (float[4]){1,1,1,1}, m);
 	RenderModel((float[3]){-10, 0, 0}, (float[4]){1,1,1,1}, m);
+*/
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_TEXTURE_2D);
+	glShadeModel(GL_FLAT);
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
@@ -104,8 +154,10 @@ int main() {
 	al_init_primitives_addon();
 	al_install_mouse();
 	al_install_keyboard();
+	al_init_image_addon();
 
 	al_set_new_display_flags(ALLEGRO_OPENGL);
+	al_set_new_display_option(ALLEGRO_DEPTH_SIZE, 24, ALLEGRO_REQUIRE);
 	display = al_create_display(640, 480);
 	if (!display) {
 		abort_example("Error creating display\n");
@@ -118,6 +170,8 @@ int main() {
 
 	ALLEGRO_COLOR black = al_map_rgb_f(0, 0, 0);
 	ALLEGRO_COLOR white = al_map_rgb_f(1, 1, 1);
+
+	texture = al_load_bitmap("data/tex.png");
 
 /*
 	ALLEGRO_SHADER* shader = al_create_shader(ALLEGRO_SHADER_AUTO);
@@ -143,7 +197,7 @@ int main() {
 	al_use_shader(shader);
 */
 	init_camera(&camera);
-	Static_model* m = load_static_model("data/cube.tmf");
+	Static_model* m = load_static_model("data/cube2.tmf");
 
 	al_set_mouse_xy(display, 320, 240);
 
@@ -164,6 +218,10 @@ int main() {
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
 						roll = 1;
+					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_N) {
+						face += 1;
+						face %= 12;
 					}
 					break;
 				case ALLEGRO_EVENT_KEY_UP:

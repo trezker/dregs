@@ -3,7 +3,7 @@
 #include <GL/glu.h>
 #include "static_model.h"
 
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 
 void i_static_model_load_normals(ALLEGRO_FILE* f, Static_model* m, int n) {
 	m->normals = malloc(4*3*n);
@@ -81,6 +81,6 @@ void render_static_model(Static_model* m) {
 	glTexCoordPointer(2, GL_FLOAT, 0, m->uvs);
 	glNormalPointer(GL_FLOAT, 0, m->normals);
 
-	glDrawElements (GL_TRIANGLES, m->num_indices,
+	glDrawElements (GL_TRIANGLES, 6,//m->num_indices,
 					GL_UNSIGNED_SHORT, m->faces);
 }
