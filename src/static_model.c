@@ -35,17 +35,12 @@ Static_model* load_static_model(char* path){
 #endif
 
 	//Normals
-	if(m->smooth) {
-		i_static_model_load_normals(f, m, m->num_vertices);
-	}
-	else {
-		i_static_model_load_normals(f, m, m->num_indices/3);
-	}
+	i_static_model_load_normals(f, m, m->num_vertices);
 
-	m->uvs = malloc(4*2*m->num_indices);
-	al_fread(f, m->uvs, 4*2*m->num_indices);
+	m->uvs = malloc(4*2*m->num_vertices);
+	al_fread(f, m->uvs, 4*2*m->num_vertices);
 #ifdef DEBUG_PRINT
-	for(int i=0; i<m->num_indices; ++i) {
+	for(int i=0; i<m->num_vertices; ++i) {
 		printf("%f %f\n", m->uvs[i*2], m->uvs[i*2+1]);
 	}
 #endif
@@ -81,6 +76,6 @@ void render_static_model(Static_model* m) {
 	glTexCoordPointer(2, GL_FLOAT, 0, m->uvs);
 	glNormalPointer(GL_FLOAT, 0, m->normals);
 
-	glDrawElements (GL_TRIANGLES, 6,//m->num_indices,
+	glDrawElements (GL_TRIANGLES, m->num_indices,
 					GL_UNSIGNED_SHORT, m->faces);
 }

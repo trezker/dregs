@@ -197,7 +197,7 @@ int main() {
 	al_use_shader(shader);
 */
 	init_camera(&camera);
-	Static_model* m = load_static_model("data/cube2.tmf");
+	Static_model* m = load_static_model("data/cube.tmf");
 
 	al_set_mouse_xy(display, 320, 240);
 
