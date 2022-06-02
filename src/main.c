@@ -70,8 +70,22 @@ void RenderModel(float* p, float* c, Static_model* m) {
 	glPopMatrix();
 }
 
-void Radar(float* p) {
+void Radar(float* p, float* c) {
+	glTranslatef(0, -2, -8);
+	glScalef(0.01, 0.01, 0.01);
+	apply_camera(&camera);
 
+	glPointSize(5);
+	glEnableClientState (GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	
+	glVertexPointer (3, GL_FLOAT, 0, p);
+	glColorPointer  (4, GL_FLOAT, 0, c);
+
+	glDrawArrays (GL_POINTS, 0, 6);
+
+	glDisableClientState (GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 void Models(float* p, Static_model* m) {
@@ -95,24 +109,34 @@ void Render(Static_model* m)
 {
 	float fov = 45.f;
 	float near = 1.f;
-	float far = 100.f;
+	float far = 1000.f;
 	float width = 640;
 	float height = 480;
 	Init_perspective_view(fov, width/height, near, far);
 
 	float positions[6*3] = {
-		  0,  0,-10,
-		  0,  0, 10,
-		  0, 10,  0,
-		  0,-10,  0,
-		 10,  0,  0,
-		-10,  0,  0,
+		  0,  0,-100,
+		  0,  0, 100,
+		  0, 100,  0,
+		  0,-100,  0,
+		 100,  0,  0,
+		-100,  0,  0,
+	};
+	float colors[6*4] = {
+		0, 0, 1, 1,
+		0, 0, 1, 1,
+		0, 1, 0, 1,
+		0, 1, 0, 1,
+		1, 0, 0, 1,
+		1, 0, 0, 1
 	};
 
 	glPushMatrix();
 	apply_camera(&camera);
 	Models(positions, m);
 	glPopMatrix();
+
+	Radar(positions, colors);
 
 	Pop_view();
 }
