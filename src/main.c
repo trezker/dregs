@@ -92,6 +92,7 @@ void RenderModel(float* p, float* c, Static_model* m) {
 void Radar(float* p, float* c) {
 	glTranslatef(0, -2, -8);
 	glScalef(0.01, 0.01, 0.01);
+	glRotatef(30, 1, 0, 0);
 	apply_camera(&camera);
 
 	glPointSize(5);
