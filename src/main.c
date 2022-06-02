@@ -70,6 +70,26 @@ void RenderModel(float* p, float* c, Static_model* m) {
 	glPopMatrix();
 }
 
+void Radar(float* p) {
+
+}
+
+void Models(float* p, Static_model* m) {
+	glEnable(GL_DEPTH_TEST);
+ 	glClear(GL_DEPTH_BUFFER_BIT);
+ 	glDepthFunc(GL_LESS);
+
+	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
+	glEnable(GL_TEXTURE_2D);
+
+	glDisable(GL_LIGHTING);
+	for(int i=0;i<6;++i) {
+		RenderModel(p+i*3, (float[4]){1,1,1,1}, m);
+	}
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_DEPTH_TEST);
+}
+
 int face = 0;
 void Render(Static_model* m)
 {
@@ -79,65 +99,20 @@ void Render(Static_model* m)
 	float width = 640;
 	float height = 480;
 	Init_perspective_view(fov, width/height, near, far);
-	glEnable(GL_DEPTH_TEST);
- 	glClear(GL_DEPTH_BUFFER_BIT);
- 	glDepthFunc(GL_LESS);
+
+	float positions[6*3] = {
+		  0,  0,-10,
+		  0,  0, 10,
+		  0, 10,  0,
+		  0,-10,  0,
+		 10,  0,  0,
+		-10,  0,  0,
+	};
+
+	glPushMatrix();
 	apply_camera(&camera);
-
-	//Quad();
-/*
-	glTranslatef(0, 0, -5);
-	apply_camera(&camera);
-
-	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
-	glEnable(GL_TEXTURE_2D);
-	glDisable(GL_LIGHTING);
-	glBegin(GL_TRIANGLES);
-	float color[4] = {1, 1, 1, 1};
-	glColor4fv(color);
-	glNormal3f( 0,  0, 1);
-
-	for(face = 0; face<12; ++face) {
-		glTexCoord2f(m->uvs[face*6+0], m->uvs[face*6+1]);
-		int v = m->faces[face*3+0];
-		glVertex3f( m->vertices[v*3+0],  m->vertices[v*3+1], m->vertices[v*3+2]);
-		glTexCoord2f(m->uvs[face*6+2], m->uvs[face*6+3]);
-		v = m->faces[face*3+1];
-		glVertex3f( m->vertices[v*3+0],  m->vertices[v*3+1], m->vertices[v*3+2]);
-		glTexCoord2f(m->uvs[face*6+4], m->uvs[face*6+5]);
-		v = m->faces[face*3+2];
-		glVertex3f( m->vertices[v*3+0],  m->vertices[v*3+1], m->vertices[v*3+2]);
-	}
-	glEnd();
-	glEnable(GL_LIGHTING);
-*/
-	glEnable(GL_DEPTH_TEST);
- 	glClear(GL_DEPTH_BUFFER_BIT);
- 	glDepthFunc(GL_LESS);
-	glEnable(GL_LIGHTING);
-
-	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
-	glEnable(GL_TEXTURE_2D);
-	glShadeModel(GL_SMOOTH);
-
-	glAlphaFunc(GL_GREATER, 0.01f);
-	glEnable(GL_ALPHA_TEST);
-
-	glDisable(GL_LIGHTING);
-	RenderModel((float[3]){0, 0, -10}, (float[4]){1,1,1,1}, m);
-	/*
-	RenderModel((float[3]){0, 0, 10}, (float[4]){1,1,1,1}, m);
-	RenderModel((float[3]){0, 10, 0}, (float[4]){1,1,1,1}, m);
-	RenderModel((float[3]){0, -10, 0}, (float[4]){1,1,1,1}, m);
-	RenderModel((float[3]){10, 0, 0}, (float[4]){1,1,1,1}, m);
-	RenderModel((float[3]){-10, 0, 0}, (float[4]){1,1,1,1}, m);
-*/
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_TEXTURE_2D);
-	glShadeModel(GL_FLAT);
-
-	glDisable(GL_LIGHTING);
-	glDisable(GL_DEPTH_TEST);
+	Models(positions, m);
+	glPopMatrix();
 
 	Pop_view();
 }

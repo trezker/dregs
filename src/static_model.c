@@ -78,4 +78,8 @@ void render_static_model(Static_model* m) {
 
 	glDrawElements (GL_TRIANGLES, m->num_indices,
 					GL_UNSIGNED_SHORT, m->faces);
+
+	glDisableClientState (GL_VERTEX_ARRAY);
+	glDisableClientState (GL_NORMAL_ARRAY);
+	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 }
