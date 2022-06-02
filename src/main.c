@@ -109,11 +109,16 @@ void Radar(float* p, float* c) {
 	float o[3];
 	float cp[3] = {0,0,0};
 	glBegin(GL_LINES);
+	glColor4f(1, 1, 1, 1);
+	glVertex3f(camera.front[0]*100, camera.front[1]*100, camera.front[2]*100);
+	glVertex3f(-camera.front[0]*100, -camera.front[1]*100, -camera.front[2]*100);
+	glVertex3f(camera.right[0]*100, camera.right[1]*100, camera.right[2]*100);
+	glVertex3f(-camera.right[0]*100, -camera.right[1]*100, -camera.right[2]*100);
 	for(int i=0;i<6; ++i) {
 		ProjectPointOnPlane(camera.up, cp, p+i*3, o);
 		glColor4fv(c+i*4);
-		glVertex3f(p[i*3+0],  p[i*3+1], p[i*3+2]);
-		glVertex3f(o[0],  o[1], o[2]);
+		glVertex3fv(p+i*3);
+		glVertex3fv(o);
 	}
 	glEnd();
 }
