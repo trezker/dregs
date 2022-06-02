@@ -64,7 +64,7 @@ void Quad() {
 void RenderModel(float* p, float* c, Static_model* m) {
 	glPushMatrix();
 	glTranslatef(p[0], p[1], p[2]);
-	apply_camera(&camera);
+	//apply_camera(&camera);
 	glColor4fv(c);
 	render_static_model(m);
 	glPopMatrix();
@@ -82,7 +82,7 @@ void Render(Static_model* m)
 	glEnable(GL_DEPTH_TEST);
  	glClear(GL_DEPTH_BUFFER_BIT);
  	glDepthFunc(GL_LESS);
-	//apply_camera(&camera);
+	apply_camera(&camera);
 
 	//Quad();
 /*
@@ -203,7 +203,7 @@ int main() {
 
 	float r[3] = {0,0,0};
 	double last_time = al_current_time();
-	float roll = 0;
+	float yaw = 0;
 
 	int done = 0;
 	while(!done) {
@@ -214,10 +214,10 @@ int main() {
 						done = 1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
-						roll = -1;
+						yaw = 1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
-						roll = 1;
+						yaw = -1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_N) {
 						face += 1;
@@ -226,10 +226,10 @@ int main() {
 					break;
 				case ALLEGRO_EVENT_KEY_UP:
 					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
-						roll = 0;
+						yaw = 0;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
-						roll = 0;
+						yaw = 0;
 					}
 					break;
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -238,8 +238,8 @@ int main() {
 				case ALLEGRO_EVENT_MOUSE_AXES: {
 					r[0] += -event.mouse.dy * 0.01;
 					r[0] = clamp(r[0], -1, 1);
-					r[1] += -event.mouse.dx * 0.01;
-					r[1] = clamp(r[1], -1, 1);
+					r[2] += event.mouse.dx * 0.01;
+					r[2] = clamp(r[2], -1, 1);
 					break;
 				}
 			}
@@ -249,7 +249,7 @@ int main() {
 		double dt = current_time - last_time;
 		last_time = current_time;
 
-		r[2] += dt*roll;
+		r[1] += dt*yaw;
 		float dr[3] = {
 			r[0]*dt,
 			r[1]*dt,
