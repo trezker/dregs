@@ -43,6 +43,25 @@ void abort_example(char const *format, ...)
 }
 
 ALLEGRO_BITMAP* texture;
+
+float vec3_dot(float* a, float* b) {
+	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+}
+
+void ProjectPointOnPlane(float* planeNormal, float* planePoint, float* point, float* out) {
+	float diff[3] = {
+		point[0] - planePoint[0],
+		point[1] - planePoint[1],
+		point[2] - planePoint[2]
+	};
+
+	float distance = -vec3_dot(planeNormal, diff);
+
+	out[0] = point[0] + planeNormal[0]*distance;
+	out[1] = point[1] + planeNormal[1]*distance;
+	out[2] = point[2] + planeNormal[2]*distance;
+}
+
 void Quad() {
 	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
 	glEnable(GL_TEXTURE_2D);
@@ -86,6 +105,17 @@ void Radar(float* p, float* c) {
 
 	glDisableClientState (GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
+
+	float o[3];
+	float cp[3] = {0,0,0};
+	glBegin(GL_LINES);
+	for(int i=0;i<6; ++i) {
+		ProjectPointOnPlane(camera.up, cp, p+i*3, o);
+		glColor4fv(c+i*4);
+		glVertex3f(p[i*3+0],  p[i*3+1], p[i*3+2]);
+		glVertex3f(o[0],  o[1], o[2]);
+	}
+	glEnd();
 }
 
 void Models(float* p, Static_model* m) {
