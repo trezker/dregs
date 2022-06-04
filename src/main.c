@@ -109,6 +109,23 @@ void Radar(float* p, float* c) {
 		glVertex3fv(o);
 	}
 	glEnd();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+	glBegin(GL_QUADS);
+	float color[4] = {1, 1, 1, .5};
+	glColor4fv(color);
+	glNormal3fv(camera.up);
+	float r[3];
+	vec3_multf(camera.right, 100, r);
+	float f[3];
+	vec3_multf(camera.front, 100, f);
+	glTexCoord2f(0, 0); glVertex3f(-r[0]+f[0], -r[1]+f[1], -r[2]+f[2]);
+	glTexCoord2f(1, 0); glVertex3f( r[0]+f[0],  r[1]+f[1],  r[2]+f[2]);
+	glTexCoord2f(1, 1); glVertex3f( r[0]-f[0],  r[1]-f[1],  r[2]-f[2]);
+	glTexCoord2f(0, 1); glVertex3f(-r[0]-f[0], -r[1]-f[1], -r[2]-f[2]);
+	glEnd();
+	glDisable(GL_BLEND);
 }
 
 void Models(float* p, Static_model* m) {
