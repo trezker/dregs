@@ -42,17 +42,11 @@ void abort_example(char const *format, ...)
 ALLEGRO_BITMAP* texture;
 
 void ProjectPointOnPlane(float* planeNormal, float* planePoint, float* point, float* out) {
-	float diff[3] = {
-		point[0] - planePoint[0],
-		point[1] - planePoint[1],
-		point[2] - planePoint[2]
-	};
-
+	float diff[3];
+	vec3_subv(point, planePoint, diff);
 	float distance = -vec3_dot(planeNormal, diff);
-
-	out[0] = point[0] + planeNormal[0]*distance;
-	out[1] = point[1] + planeNormal[1]*distance;
-	out[2] = point[2] + planeNormal[2]*distance;
+	vec3_multf(planeNormal, distance, diff);
+	vec3_addv(point, diff, out);
 }
 
 void Quad() {

@@ -22,3 +22,21 @@ void vec3_cross(float* in1, float* in2, float* out) {
 float vec3_dot(float* a, float* b) {
 	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
 }
+
+void vec3_subv(float* a, float* b, float* out) {
+	out[0] = a[0] - b[0];
+	out[1] = a[1] - b[1];
+	out[2] = a[2] - b[2];
+}
+
+void vec3_multf(float* in, float m, float* out) {
+	out[0] = in[0]*m;
+	out[1] = in[1]*m;
+	out[2] = in[2]*m;
+}
+
+void vec3_addv(float* a, float* b, float* out) {
+	out[0] = a[0]+b[0];
+	out[1] = a[1]+b[1];
+	out[2] = a[2]+b[2];
+}
