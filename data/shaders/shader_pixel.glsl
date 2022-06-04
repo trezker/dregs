@@ -72,5 +72,5 @@ void main()
    float dif = GetLight(p);
    col = vec3(dif);
 
-   gl_FragColor = vec4(col, 1.0);
+   gl_FragColor = vec4(col, .5);
 }

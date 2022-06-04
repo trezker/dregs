@@ -14,6 +14,7 @@
 #include "vec.h"
 
 Camera camera;
+ALLEGRO_SHADER* shader;
 
 float clamp(float v, float min, float max) {
 	return v<min?min:v>max?max:v;
@@ -110,6 +111,7 @@ void Radar(float* p, float* c) {
 	}
 	glEnd();
 
+	al_use_shader(shader);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 	glBegin(GL_QUADS);
@@ -126,6 +128,7 @@ void Radar(float* p, float* c) {
 	glTexCoord2f(0, 1); glVertex3f(-r[0]-f[0], -r[1]-f[1], -r[2]-f[2]);
 	glEnd();
 	glDisable(GL_BLEND);
+	al_use_shader(NULL);
 }
 
 void Models(float* p, Static_model* m) {
@@ -212,14 +215,14 @@ int main() {
 
 	texture = al_load_bitmap("data/tex.png");
 
-/*
-	ALLEGRO_SHADER* shader = al_create_shader(ALLEGRO_SHADER_AUTO);
+
+	shader = al_create_shader(ALLEGRO_SHADER_AUTO);
 	if(!shader) {
 		abort_example("Could not create shader.\n");
 	}
 	
-	const char *vsource = "shader_vertex.glsl";
-	const char *psource = "shader_pixel.glsl";
+	const char *vsource = "data/shaders/shader_vertex.glsl";
+	const char *psource = "data/shaders/shader_pixel.glsl";
 	if (!al_attach_shader_source_file(shader, ALLEGRO_VERTEX_SHADER, vsource)) {
 		abort_example("al_attach_shader_source_file failed: %s\n",
 		al_get_shader_log(shader));
@@ -233,8 +236,8 @@ int main() {
 		abort_example("al_build_shader failed: %s\n", al_get_shader_log(shader));
 	}
 
-	al_use_shader(shader);
-*/
+//	al_use_shader(shader);
+
 	init_camera(&camera);
 	Static_model* m = load_static_model("data/cube.tmf");
 
