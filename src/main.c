@@ -13,10 +13,6 @@
 #include "camera.h"
 #include "vec.h"
 
-#define MAX_STEPS 100
-#define MAX_DIST 100.
-#define SURF_DIST .01
-
 Camera camera;
 
 float clamp(float v, float min, float max) {
