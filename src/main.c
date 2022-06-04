@@ -78,6 +78,10 @@ void RenderModel(float* p, float* c, Static_model* m) {
 }
 
 void Radar(float* p, float* c) {
+	glEnable(GL_DEPTH_TEST);
+ 	glClear(GL_DEPTH_BUFFER_BIT);
+ 	glDepthFunc(GL_LESS);
+
 	glTranslatef(0, -2, -8);
 	glScalef(0.01, 0.01, 0.01);
 	glRotatef(30, 1, 0, 0);
@@ -122,13 +126,14 @@ void Radar(float* p, float* c) {
 	vec3_multf(camera.right, 100, r);
 	float f[3];
 	vec3_multf(camera.front, 100, f);
-	glTexCoord2f(0, 0); glVertex3f(-r[0]+f[0], -r[1]+f[1], -r[2]+f[2]);
-	glTexCoord2f(1, 0); glVertex3f( r[0]+f[0],  r[1]+f[1],  r[2]+f[2]);
-	glTexCoord2f(1, 1); glVertex3f( r[0]-f[0],  r[1]-f[1],  r[2]-f[2]);
-	glTexCoord2f(0, 1); glVertex3f(-r[0]-f[0], -r[1]-f[1], -r[2]-f[2]);
+	glTexCoord2f(0, 1); glVertex3f(-r[0]+f[0], -r[1]+f[1], -r[2]+f[2]);
+	glTexCoord2f(1, 1); glVertex3f( r[0]+f[0],  r[1]+f[1],  r[2]+f[2]);
+	glTexCoord2f(1, 0); glVertex3f( r[0]-f[0],  r[1]-f[1],  r[2]-f[2]);
+	glTexCoord2f(0, 0); glVertex3f(-r[0]-f[0], -r[1]-f[1], -r[2]-f[2]);
 	glEnd();
 	glDisable(GL_BLEND);
 	al_use_shader(NULL);
+	glDisable(GL_DEPTH_TEST);
 }
 
 void Models(float* p, Static_model* m) {
@@ -222,7 +227,7 @@ int main() {
 	}
 	
 	const char *vsource = "data/shaders/shader_vertex.glsl";
-	const char *psource = "data/shaders/shader_pixel.glsl";
+	const char *psource = "data/shaders/radar.glsl";
 	if (!al_attach_shader_source_file(shader, ALLEGRO_VERTEX_SHADER, vsource)) {
 		abort_example("al_attach_shader_source_file failed: %s\n",
 		al_get_shader_log(shader));
@@ -290,6 +295,7 @@ int main() {
 		double current_time = al_current_time();
 		double dt = current_time - last_time;
 		last_time = current_time;
+		al_set_shader_float("iTime", current_time);
 
 		r[1] += dt*yaw;
 		float dr[3];
