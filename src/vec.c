@@ -18,3 +18,7 @@ void vec3_cross(float* in1, float* in2, float* out) {
 	out[1] = in1[2] * in2[0] - in1[0] * in2[2],
 	out[2] = in1[0] * in2[1] - in1[1] * in2[0];
 }
+
+float vec3_dot(float* a, float* b) {
+	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+}

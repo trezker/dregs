@@ -11,6 +11,7 @@
 #include "view.h"
 #include "static_model.h"
 #include "camera.h"
+#include "vec.h"
 
 #define MAX_STEPS 100
 #define MAX_DIST 100.
@@ -43,10 +44,6 @@ void abort_example(char const *format, ...)
 }
 
 ALLEGRO_BITMAP* texture;
-
-float vec3_dot(float* a, float* b) {
-	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
-}
 
 void ProjectPointOnPlane(float* planeNormal, float* planePoint, float* point, float* out) {
 	float diff[3] = {
