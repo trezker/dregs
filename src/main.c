@@ -77,7 +77,27 @@ void RenderModel(float* p, float* c, Static_model* m) {
 	glPopMatrix();
 }
 
+void radar_plane() {
+	al_use_shader(shader);
+	glBegin(GL_QUADS);
+	float color[4] = {1, 1, 1, .5};
+	glColor4fv(color);
+	glNormal3fv(camera.up);
+	float r[3];
+	vec3_multf(camera.right, 100, r);
+	float f[3];
+	vec3_multf(camera.front, 100, f);
+	glTexCoord2f(0, 1); glVertex3f(-r[0]+f[0], -r[1]+f[1], -r[2]+f[2]);
+	glTexCoord2f(1, 1); glVertex3f( r[0]+f[0],  r[1]+f[1],  r[2]+f[2]);
+	glTexCoord2f(1, 0); glVertex3f( r[0]-f[0],  r[1]-f[1],  r[2]-f[2]);
+	glTexCoord2f(0, 0); glVertex3f(-r[0]-f[0], -r[1]-f[1], -r[2]-f[2]);
+	glEnd();
+	al_use_shader(NULL);
+}
+
 void Radar(float* p, float* c) {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 	glEnable(GL_DEPTH_TEST);
  	glClear(GL_DEPTH_BUFFER_BIT);
  	glDepthFunc(GL_LESS);
@@ -86,6 +106,8 @@ void Radar(float* p, float* c) {
 	glScalef(0.01, 0.01, 0.01);
 	glRotatef(30, 1, 0, 0);
 	apply_camera(&camera);
+
+	radar_plane();
 
 	glPointSize(5);
 	glEnableClientState (GL_VERTEX_ARRAY);
@@ -102,11 +124,6 @@ void Radar(float* p, float* c) {
 	float o[3];
 	float cp[3] = {0,0,0};
 	glBegin(GL_LINES);
-	glColor4f(1, 1, 1, 1);
-	glVertex3f(camera.front[0]*100, camera.front[1]*100, camera.front[2]*100);
-	glVertex3f(-camera.front[0]*100, -camera.front[1]*100, -camera.front[2]*100);
-	glVertex3f(camera.right[0]*100, camera.right[1]*100, camera.right[2]*100);
-	glVertex3f(-camera.right[0]*100, -camera.right[1]*100, -camera.right[2]*100);
 	for(int i=0;i<6; ++i) {
 		ProjectPointOnPlane(camera.up, cp, p+i*3, o);
 		glColor4fv(c+i*4);
@@ -115,25 +132,8 @@ void Radar(float* p, float* c) {
 	}
 	glEnd();
 
-	al_use_shader(shader);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
-	glBegin(GL_QUADS);
-	float color[4] = {1, 1, 1, .5};
-	glColor4fv(color);
-	glNormal3fv(camera.up);
-	float r[3];
-	vec3_multf(camera.right, 100, r);
-	float f[3];
-	vec3_multf(camera.front, 100, f);
-	glTexCoord2f(0, 1); glVertex3f(-r[0]+f[0], -r[1]+f[1], -r[2]+f[2]);
-	glTexCoord2f(1, 1); glVertex3f( r[0]+f[0],  r[1]+f[1],  r[2]+f[2]);
-	glTexCoord2f(1, 0); glVertex3f( r[0]-f[0],  r[1]-f[1],  r[2]-f[2]);
-	glTexCoord2f(0, 0); glVertex3f(-r[0]-f[0], -r[1]-f[1], -r[2]-f[2]);
-	glEnd();
-	glDisable(GL_BLEND);
-	al_use_shader(NULL);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 }
 
 void Models(float* p, Static_model* m) {
@@ -171,12 +171,12 @@ void Render(Static_model* m)
 		-100,  0,  0,
 	};
 	float colors[6*4] = {
-		0, 0, 1, 1,
-		0, 0, 1, 1,
-		0, 1, 0, 1,
-		0, 1, 0, 1,
-		1, 0, 0, 1,
-		1, 0, 0, 1
+		0, 0, 1, 0.5,
+		0, 0, 1, 0.5,
+		0, 1, 0, 0.5,
+		0, 1, 0, 0.5,
+		1, 0, 0, 0.5,
+		1, 0, 0, 0.5
 	};
 
 	glPushMatrix();
