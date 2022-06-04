@@ -272,11 +272,14 @@ int main() {
 		last_time = current_time;
 
 		r[1] += dt*yaw;
+		float dr[3];
+		vec3_multf(r, dt, dr);
+		/*
 		float dr[3] = {
 			r[0]*dt,
 			r[1]*dt,
 			r[2]*dt
-		};
+		};*/
 		rotate_local_axis(&camera, dr);
 
 		al_clear_to_color(black);
