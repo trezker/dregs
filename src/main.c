@@ -295,7 +295,9 @@ int main() {
 		double current_time = al_current_time();
 		double dt = current_time - last_time;
 		last_time = current_time;
-		al_set_shader_float("iTime", current_time);
+		al_use_shader(shader);
+   		al_set_shader_float("iTime", current_time);
+		al_use_shader(NULL);
 
 		r[1] += dt*yaw;
 		float dr[3];
