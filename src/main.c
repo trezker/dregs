@@ -248,6 +248,7 @@ int main() {
 
 	al_set_mouse_xy(display, 320, 240);
 
+	float controls[6] = {0,0,0,0,0,0};
 	float throttle[6] = {0,0,0,0,0,0};
 	float rates[6] = {.1,.1,.1,1,1,1};
 	float momentum[6] = {0,0,0,0,0,0};
@@ -267,9 +268,11 @@ int main() {
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
 						throttle[1] = -1;
 					}
-					if(event.keyboard.keycode == ALLEGRO_KEY_N) {
-						face += 1;
-						face %= 12;
+					if(event.keyboard.keycode == ALLEGRO_KEY_W) {
+						controls[5] = 1;
+					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_S) {
+						controls[5] = -1;
 					}
 					break;
 				case ALLEGRO_EVENT_KEY_UP:
@@ -278,6 +281,12 @@ int main() {
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
 						throttle[1] = 0;
+					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_W) {
+						controls[5] = 0;
+					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_S) {
+						controls[5] = -0;
 					}
 					break;
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -306,6 +315,15 @@ int main() {
 		vec3_addv(momentum, dr, momentum);
 		vec3_multf(momentum, dt, dr); //Update values
 		rotate_local_axis(&camera, dr);
+
+		throttle[5] += controls[5]*dt;
+		throttle[5] = clamp(throttle[5], -1, 1);
+		vec3_hadamard(throttle+3, rates+3, dr);
+		vec3_multf(dr, dt, dr); //Impulse
+		//TODO: Use local axis to affect momentum
+		vec3_addv(momentum+3, dr, momentum+3);
+		vec3_multf(momentum+3, dt, dr); //Update values
+		translate_camera(&camera, momentum+3);
 
 		al_clear_to_color(black);
 		Render(m);

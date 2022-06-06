@@ -8,6 +8,7 @@
 void init_camera(Camera* c) {
 	 *c = (Camera) {
 	 	0, 0, 0,
+	 	0, 0, 0,
 	 	0, 0, -1,
 	 	1, 0, 0,
 	 	0, 1, 0,
@@ -24,6 +25,7 @@ void apply_camera(Camera* c) {
 	matrix4_t matrix;
 	Quat_to_matrix4 (c->quat_total, matrix);
 	glMultMatrixf(matrix);
+	glTranslatef(c->position[0],c->position[1],c->position[2]);
 }
 
 void rotate_local_axis(Camera* c, float rotrad[3]) {
@@ -62,4 +64,8 @@ void rotate_local_axis(Camera* c, float rotrad[3]) {
 	normalize_vec3(c->up);
 	vec3_cross(c->front, c->up, c->right);
 	normalize_vec3(c->right);
+}
+
+void translate_camera(Camera* c, float v[3]) {
+	vec3_addv(c->position, v, c->position);
 }
