@@ -105,10 +105,12 @@ void Radar(float* p, float* c) {
 	glTranslatef(0, -2, -8);
 	glScalef(0.01, 0.01, 0.01);
 	glRotatef(30, 1, 0, 0);
-	apply_camera(&camera);
+	apply_quat_rotation(camera.quat_total);
+
 
 	radar_plane();
 
+	glTranslatef(camera.position[0],camera.position[1],camera.position[2]);
 	glPointSize(5);
 	glEnableClientState (GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);

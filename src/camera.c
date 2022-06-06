@@ -16,15 +16,19 @@ void init_camera(Camera* c) {
  	Quat_init(c->quat_total);
 }
 
+void apply_quat_rotation(quat4_t q) {
+	matrix4_t matrix;
+	Quat_to_matrix4 (q, matrix);
+	glMultMatrixf(matrix);
+}
+
 void apply_camera(Camera* c) {
 	/*
 	glRotatef(c->rotation[0], 1, 0, 0);
 	glRotatef(c->rotation[1], 0, 1, 0);
 	glRotatef(c->rotation[2], 0, 0, 1);
 */
-	matrix4_t matrix;
-	Quat_to_matrix4 (c->quat_total, matrix);
-	glMultMatrixf(matrix);
+	apply_quat_rotation(c->quat_total);
 	glTranslatef(c->position[0],c->position[1],c->position[2]);
 }
 

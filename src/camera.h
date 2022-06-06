@@ -11,3 +11,4 @@ void init_camera(Camera* c);
 void apply_camera(Camera* c);
 void rotate_local_axis(Camera* c, float v[3]);
 void translate_camera(Camera* c, float v[3]);
+void apply_quat_rotation(float* q);
