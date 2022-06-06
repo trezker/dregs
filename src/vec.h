@@ -5,3 +5,4 @@ float vec3_dot(float* a, float* b);
 void vec3_subv(float* a, float* b, float* out);
 void vec3_multf(float* in, float m, float* out);
 void vec3_addv(float* a, float* b, float* out);
+void vec3_hadamard(float* a, float* b, float* out);

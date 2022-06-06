@@ -248,9 +248,10 @@ int main() {
 
 	al_set_mouse_xy(display, 320, 240);
 
-	float r[3] = {0,0,0};
+	float throttle[6] = {0,0,0,0,0,0};
+	float rates[6] = {.1,.1,.1,1,1,1};
+	float momentum[6] = {0,0,0,0,0,0};
 	double last_time = al_current_time();
-	float yaw = 0;
 
 	int done = 0;
 	while(!done) {
@@ -261,10 +262,10 @@ int main() {
 						done = 1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
-						yaw = 1;
+						throttle[1] = 1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
-						yaw = -1;
+						throttle[1] = -1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_N) {
 						face += 1;
@@ -273,20 +274,20 @@ int main() {
 					break;
 				case ALLEGRO_EVENT_KEY_UP:
 					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
-						yaw = 0;
+						throttle[1] = 0;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
-						yaw = 0;
+						throttle[1] = 0;
 					}
 					break;
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
 					done = 1;
 					break;
 				case ALLEGRO_EVENT_MOUSE_AXES: {
-					r[0] += -event.mouse.dy * 0.01;
-					r[0] = clamp(r[0], -1, 1);
-					r[2] += event.mouse.dx * 0.01;
-					r[2] = clamp(r[2], -1, 1);
+					throttle[0] += -event.mouse.dy * 0.01;
+					throttle[0] = clamp(throttle[0], -1, 1);
+					throttle[2] += event.mouse.dx * 0.01;
+					throttle[2] = clamp(throttle[2], -1, 1);
 					break;
 				}
 			}
@@ -299,9 +300,11 @@ int main() {
    		al_set_shader_float("iTime", current_time);
 		al_use_shader(NULL);
 
-		r[1] += dt*yaw;
 		float dr[3];
-		vec3_multf(r, dt, dr);
+		vec3_hadamard(throttle, rates, dr);
+		vec3_multf(dr, dt, dr); //Impulse
+		vec3_addv(momentum, dr, momentum);
+		vec3_multf(momentum, dt, dr); //Update values
 		rotate_local_axis(&camera, dr);
 
 		al_clear_to_color(black);

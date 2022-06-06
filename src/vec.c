@@ -40,3 +40,9 @@ void vec3_addv(float* a, float* b, float* out) {
 	out[1] = a[1]+b[1];
 	out[2] = a[2]+b[2];
 }
+
+void vec3_hadamard(float* a, float* b, float* out) {
+	for(int i = 0; i<3; ++i) {
+		out[i] = a[i]*b[i];
+	}
+}
