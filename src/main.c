@@ -193,7 +193,29 @@ void Render(Static_model* m)
 	Models(positions, m);
 	glPopMatrix();
 
+	glPushMatrix();
 	Radar(positions, colors);
+	glPopMatrix();
+
+	float n[3] = {ship.controls[2], ship.controls[0], 0};
+	float l = fmin(1, vec3_length(n));
+	normalize_vec3(n);
+	float u[3] = {n[1], -n[0], 0};
+	float v[3];
+	vec3_multf(n, l, v);
+	vec3_multf(u, 0.2, u);
+	vec3_multf(n, 0.4, n);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+	glBegin(GL_TRIANGLES);
+	glColor4f(1, .4, 0, l);
+	glVertex3f(v[0], v[1], -10);
+	glVertex3f(v[0]-n[0]+u[0], v[1]-n[1]+u[1], -10);
+	glVertex3f(v[0]-n[0]-u[0], v[1]-n[1]-u[1], -10);
+	glEnd();
+	glDisable(GL_BLEND);
+
 
 	Pop_view();
 }
@@ -262,11 +284,7 @@ int main() {
 		0,0,0,0,0,0,
 		.1,.1,.1,1,1,1,
 		0,0,0,0,0,0
-	};/*
-	ship.controls = {0,0,0,0,0,0};
-	ship.throttle = {0,0,0,0,0,0};
-	ship.rates = {.1,.1,.1,1,1,1};
-	ship.momentum = {0,0,0,0,0,0};*/
+	};
 	double last_time = al_current_time();
 
 	int done = 0;
@@ -312,6 +330,8 @@ int main() {
 					ship.throttle[0] = clamp(ship.throttle[0], -1, 1);
 					ship.throttle[2] += event.mouse.dx * 0.01;
 					ship.throttle[2] = clamp(ship.throttle[2], -1, 1);
+					ship.controls[0] = ship.throttle[0];
+					ship.controls[2] = ship.throttle[2];
 					break;
 				}
 			}
