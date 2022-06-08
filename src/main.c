@@ -13,8 +13,16 @@
 #include "camera.h"
 #include "vec.h"
 
+typedef struct {
+	float controls[6];
+	float throttle[6];
+	float rates[6];
+	float momentum[6];
+} Ship;
+
 Camera camera;
 ALLEGRO_SHADER* shader;
+Ship ship;
 
 float clamp(float v, float min, float max) {
 	return v<min?min:v>max?max:v;
@@ -154,7 +162,6 @@ void Models(float* p, Static_model* m) {
 	glDisable(GL_DEPTH_TEST);
 }
 
-int face = 0;
 void Render(Static_model* m)
 {
 	float fov = 45.f;
@@ -250,10 +257,16 @@ int main() {
 
 	al_set_mouse_xy(display, 320, 240);
 
-	float controls[6] = {0,0,0,0,0,0};
-	float throttle[6] = {0,0,0,0,0,0};
-	float rates[6] = {.1,.1,.1,1,1,1};
-	float momentum[6] = {0,0,0,0,0,0};
+	ship = (Ship) {
+		0,0,0,0,0,0,
+		0,0,0,0,0,0,
+		.1,.1,.1,1,1,1,
+		0,0,0,0,0,0
+	};/*
+	ship.controls = {0,0,0,0,0,0};
+	ship.throttle = {0,0,0,0,0,0};
+	ship.rates = {.1,.1,.1,1,1,1};
+	ship.momentum = {0,0,0,0,0,0};*/
 	double last_time = al_current_time();
 
 	int done = 0;
@@ -265,40 +278,40 @@ int main() {
 						done = 1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
-						throttle[1] = 1;
+						ship.throttle[1] = 1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
-						throttle[1] = -1;
+						ship.throttle[1] = -1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_W) {
-						controls[5] = 1;
+						ship.controls[5] = 1;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_S) {
-						controls[5] = -1;
+						ship.controls[5] = -1;
 					}
 					break;
 				case ALLEGRO_EVENT_KEY_UP:
 					if(event.keyboard.keycode == ALLEGRO_KEY_Q) {
-						throttle[1] = 0;
+						ship.throttle[1] = 0;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_E) {
-						throttle[1] = 0;
+						ship.throttle[1] = 0;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_W) {
-						controls[5] = 0;
+						ship.controls[5] = 0;
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_S) {
-						controls[5] = -0;
+						ship.controls[5] = -0;
 					}
 					break;
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
 					done = 1;
 					break;
 				case ALLEGRO_EVENT_MOUSE_AXES: {
-					throttle[0] += -event.mouse.dy * 0.01;
-					throttle[0] = clamp(throttle[0], -1, 1);
-					throttle[2] += event.mouse.dx * 0.01;
-					throttle[2] = clamp(throttle[2], -1, 1);
+					ship.throttle[0] += -event.mouse.dy * 0.01;
+					ship.throttle[0] = clamp(ship.throttle[0], -1, 1);
+					ship.throttle[2] += event.mouse.dx * 0.01;
+					ship.throttle[2] = clamp(ship.throttle[2], -1, 1);
 					break;
 				}
 			}
@@ -312,20 +325,20 @@ int main() {
 		al_use_shader(NULL);
 
 		float dr[3];
-		vec3_hadamard(throttle, rates, dr);
+		vec3_hadamard(ship.throttle, ship.rates, dr);
 		vec3_multf(dr, dt, dr); //Impulse
-		vec3_addv(momentum, dr, momentum);
-		vec3_multf(momentum, dt, dr); //Update values
+		vec3_addv(ship.momentum, dr, ship.momentum);
+		vec3_multf(ship.momentum, dt, dr); //Update values
 		rotate_local_axis(&camera, dr);
 
-		throttle[5] += controls[5]*dt;
-		throttle[5] = clamp(throttle[5], -1, 1);
-		vec3_hadamard(throttle+3, rates+3, dr);
+		ship.throttle[5] += ship.controls[5]*dt;
+		ship.throttle[5] = clamp(ship.throttle[5], -1, 1);
+		vec3_hadamard(ship.throttle+3, ship.rates+3, dr);
 		vec3_multf(dr, dt, dr); //Impulse
 		//TODO: Use local axis to affect momentum
-		vec3_addv(momentum+3, dr, momentum+3);
-		vec3_multf(momentum+3, dt, dr); //Update values
-		translate_camera(&camera, momentum+3);
+		vec3_addv(ship.momentum+3, dr, ship.momentum+3);
+		vec3_multf(ship.momentum+3, dt, dr); //Update values
+		translate_camera(&camera, ship.momentum+3);
 
 		al_clear_to_color(black);
 		Render(m);
