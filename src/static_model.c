@@ -1,6 +1,7 @@
-#include <allegro5/allegro.h>
 #include <stdio.h>
 #include <GL/glu.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_opengl.h>
 #include "static_model.h"
 
 #define DEBUG_PRINT
@@ -67,6 +68,14 @@ void destroy_static_model(Static_model* model) {
 }
 
 void render_static_model(Static_model* m) {
+ 	glClear(GL_DEPTH_BUFFER_BIT);
+ 	glDepthFunc(GL_LESS);
+
+	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(m->texture));
+	glEnable(GL_TEXTURE_2D);
+
+	glDisable(GL_LIGHTING);
+
 	glEnableClientState (GL_VERTEX_ARRAY);
 	glEnableClientState (GL_NORMAL_ARRAY);
 	glEnableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -82,4 +91,7 @@ void render_static_model(Static_model* m) {
 	glDisableClientState (GL_VERTEX_ARRAY);
 	glDisableClientState (GL_NORMAL_ARRAY);
 	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_DEPTH_TEST);
 }

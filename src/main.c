@@ -147,19 +147,9 @@ void Radar(float* p, float* c) {
 }
 
 void Models(float* p, Static_model* m) {
-	glEnable(GL_DEPTH_TEST);
- 	glClear(GL_DEPTH_BUFFER_BIT);
- 	glDepthFunc(GL_LESS);
-
-	glBindTexture(GL_TEXTURE_2D, al_get_opengl_texture(texture));
-	glEnable(GL_TEXTURE_2D);
-
-	glDisable(GL_LIGHTING);
 	for(int i=0;i<6;++i) {
 		RenderModel(p+i*3, (float[4]){1,1,1,1}, m);
 	}
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_DEPTH_TEST);
 }
 
 void Render(Static_model* m)
@@ -276,6 +266,7 @@ int main() {
 
 	init_camera(&camera);
 	Static_model* m = load_static_model("data/cube.tmf");
+	m->texture = texture;
 
 	al_set_mouse_xy(display, 320, 240);
 
@@ -326,9 +317,9 @@ int main() {
 					done = 1;
 					break;
 				case ALLEGRO_EVENT_MOUSE_AXES: {
-					ship.throttle[0] += -event.mouse.dy * 0.01;
+					ship.throttle[0] += -event.mouse.dy * 0.001;
 					ship.throttle[0] = clamp(ship.throttle[0], -1, 1);
-					ship.throttle[2] += event.mouse.dx * 0.01;
+					ship.throttle[2] += event.mouse.dx * 0.001;
 					ship.throttle[2] = clamp(ship.throttle[2], -1, 1);
 					ship.controls[0] = ship.throttle[0];
 					ship.controls[2] = ship.throttle[2];

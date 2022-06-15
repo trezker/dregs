@@ -6,6 +6,7 @@ typedef struct {
 	float* normals;
 	float* uvs;
 	int16_t* faces;
+	void* texture;
 } Static_model;
 
 Static_model* load_static_model(char* path);
