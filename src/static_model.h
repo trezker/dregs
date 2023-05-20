@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 typedef struct {
 	int16_t num_vertices;
 	int16_t num_indices;

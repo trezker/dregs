@@ -12,6 +12,7 @@
 #include "static_model.h"
 #include "camera.h"
 #include "vec.h"
+#include "crates.h"
 
 typedef struct {
 	float controls[6];
@@ -104,6 +105,15 @@ void radar_plane() {
 }
 
 void Radar(float* p, float* c) {
+	float logp[3*6];
+
+	for(int i=0;i<6; ++i) {
+		vec3_subv(camera.position, p+i*3, logp);
+		float l = vec3_length(logp+i*3);
+		vec3_normalize(logp+i*3, logp+i*3);
+		vec3_multf(logp+i*3, log(l), logp+i*3);
+	}
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 	glEnable(GL_DEPTH_TEST);
@@ -123,7 +133,7 @@ void Radar(float* p, float* c) {
 	glEnableClientState (GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	
-	glVertexPointer (3, GL_FLOAT, 0, p);
+	glVertexPointer (3, GL_FLOAT, 0, logp);
 	glColorPointer  (4, GL_FLOAT, 0, c);
 
 	glDrawArrays (GL_POINTS, 0, 6);
@@ -135,9 +145,9 @@ void Radar(float* p, float* c) {
 	float cp[3] = {0,0,0};
 	glBegin(GL_LINES);
 	for(int i=0;i<6; ++i) {
-		ProjectPointOnPlane(camera.up, cp, p+i*3, o);
+		ProjectPointOnPlane(camera.up, cp, logp+i*3, o);
 		glColor4fv(c+i*4);
-		glVertex3fv(p+i*3);
+		glVertex3fv(logp+i*3);
 		glVertex3fv(o);
 	}
 	glEnd();
@@ -162,12 +172,12 @@ void Render(Static_model* m)
 	Init_perspective_view(fov, width/height, near, far);
 
 	float positions[6*3] = {
-		  0,  0,-100,
-		  0,  0, 100,
-		  0, 100,  0,
-		  0,-100,  0,
-		 100,  0,  0,
-		-100,  0,  0,
+		  0,  0,-1000,
+		  0,  0, 1000,
+		  0, 1000,  0,
+		  0,-1000,  0,
+		 1000,  0,  0,
+		-1000,  0,  0,
 	};
 	float colors[6*4] = {
 		0, 0, 1, 0.5,
@@ -181,6 +191,7 @@ void Render(Static_model* m)
 	glPushMatrix();
 	apply_camera(&camera);
 	Models(positions, m);
+	render_crates(m);
 	glPopMatrix();
 
 	glPushMatrix();
@@ -189,7 +200,7 @@ void Render(Static_model* m)
 
 	float n[3] = {ship.controls[2], ship.controls[0], 0};
 	float l = fmin(1, vec3_length(n));
-	normalize_vec3(n);
+	vec3_normalize(n, n);
 	float u[3] = {n[1], -n[0], 0};
 	float v[3];
 	vec3_multf(n, l, v);
@@ -276,6 +287,9 @@ int main() {
 		.1,.1,.1,1,1,1,
 		0,0,0,0,0,0
 	};
+
+	init_crates();
+
 	double last_time = al_current_time();
 
 	int done = 0;
@@ -297,6 +311,12 @@ int main() {
 					}
 					if(event.keyboard.keycode == ALLEGRO_KEY_S) {
 						ship.controls[5] = -1;
+					}
+					if(event.keyboard.keycode == ALLEGRO_KEY_R) {
+						for(int i = 0; i < 6; ++i) {
+							ship.momentum[i] = 0;
+							ship.throttle[i] = 0;
+						}
 					}
 					break;
 				case ALLEGRO_EVENT_KEY_UP:
@@ -350,6 +370,8 @@ int main() {
 		vec3_addv(ship.momentum+3, dr, ship.momentum+3);
 		vec3_multf(ship.momentum+3, dt, dr); //Update values
 		translate_camera(&camera, ship.momentum+3);
+
+		update_crates(dt);
 
 		al_clear_to_color(black);
 		Render(m);

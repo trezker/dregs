@@ -64,10 +64,10 @@ void rotate_local_axis(Camera* c, float rotrad[3]) {
 	in[2] = 0;
 	Quat_rotatePoint (c->quat_total, in, c->up);
 
-	normalize_vec3(c->front);
-	normalize_vec3(c->up);
+	vec3_normalize(c->front, c->front);
+	vec3_normalize(c->up, c->up);
 	vec3_cross(c->front, c->up, c->right);
-	normalize_vec3(c->right);
+	vec3_normalize(c->right, c->right);
 }
 
 void translate_camera(Camera* c, float v[3]) {

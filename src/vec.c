@@ -4,13 +4,13 @@ float vec3_length(float v[3]) {
 	return sqrt( v[0] * v[0] + v[1] * v[1] + v[2] * v[2] );
 }
 
-void normalize_vec3(float* v) {
+void vec3_normalize(float* v, float* o) {
 	float len = vec3_length(v);
 	len = (len != 0 ? len : 1.0f);
 	float lengthMul = 1.0f / len;
-	v[0] *= lengthMul;
-	v[1] *= lengthMul;
-	v[2] *= lengthMul;
+	o[0] = v[0] * lengthMul;
+	o[1] = v[1] * lengthMul;
+	o[2] = v[2] * lengthMul;
 }
 
 void vec3_cross(float* in1, float* in2, float* out) {
